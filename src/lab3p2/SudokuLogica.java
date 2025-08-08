@@ -8,6 +8,7 @@ package lab3p2;
  *
  * @author ljmc2
  */
+
 public class SudokuLogica extends LogicaAbstract {
 
     public static final int SIZE = 9;
@@ -37,6 +38,10 @@ public class SudokuLogica extends LogicaAbstract {
     @Override
     public int get(int row, int col) {
         return tablero[row][col];
+    }
+
+    public int getSolucion(int row, int col) { // NUEVO: para comparar
+        return solucion[row][col];
     }
 
     @Override

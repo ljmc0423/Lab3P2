@@ -14,10 +14,12 @@ import java.util.HashSet;
  *
  * @author ljmc2
  */
+
 public class Lab3P2 extends JFrame {
 
     private SudokuLogica logica;
     private JTextField[][] cells = new JTextField[SudokuLogica.SIZE][SudokuLogica.SIZE];
+    private int intentosRestantes = 5; // NUEVO: contador de intentos
 
     public Lab3P2() {
         logica = new SudokuLogica();
@@ -51,6 +53,10 @@ public class Lab3P2 extends JFrame {
                         tf.addKeyListener(new KeyAdapter() {
                             @Override
                             public void keyTyped(KeyEvent e) {
+                                if (!tf.isEditable()) {
+                                    e.consume();
+                                    return;
+                                }
                                 char ch = e.getKeyChar();
                                 if (ch < '1' || ch > '9') {
                                     e.consume();
@@ -75,21 +81,23 @@ public class Lab3P2 extends JFrame {
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
         p.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        
+
         JButton resetBtn = new JButton("Limpiar tablero");
         resetBtn.setAlignmentX(CENTER_ALIGNMENT);
         resetBtn.addActionListener(e -> {
             logica.cargar(vacio(), vacio());
             refrescar();
+            intentosRestantes = 5;
+            habilitarCeldas(true);
         });
-        
-        
 
         JButton loadBtn = new JButton("Cargar problema");
         loadBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         loadBtn.addActionListener(e -> {
             logica.cargar(problema(), solucionProblema());
             refrescar();
+            intentosRestantes = 5;
+            habilitarCeldas(true);
         });
 
         JButton validateBtn = new JButton("Validar");
@@ -98,7 +106,14 @@ public class Lab3P2 extends JFrame {
             if (logica.resuelto()) {
                 JOptionPane.showMessageDialog(this, "¡Correcto! Has resuelto el Sudoku.");
             } else {
-                JOptionPane.showMessageDialog(this, "Aún no es correcto, sigue intentando.");
+                marcarErrores();
+                intentosRestantes--;
+                if (intentosRestantes > 0) {
+                    JOptionPane.showMessageDialog(this, "Aún no es correcto. Intentos restantes: " + intentosRestantes);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Has perdido. No te quedan intentos.");
+                    habilitarCeldas(false);
+                }
             }
         });
 
@@ -107,6 +122,7 @@ public class Lab3P2 extends JFrame {
         giveUpBtn.addActionListener(e -> {
             logica.revelarSolucion();
             refrescar();
+            habilitarCeldas(false);
         });
 
         p.add(loadBtn);
@@ -121,11 +137,36 @@ public class Lab3P2 extends JFrame {
         return p;
     }
 
+    private void marcarErrores() {
+        for (int r = 0; r < SudokuLogica.SIZE; r++) {
+            for (int c = 0; c < SudokuLogica.SIZE; c++) {
+                int valor = logica.get(r, c);
+                if (valor == 0) {
+                    cells[r][c].setBackground(Color.WHITE);
+                } else if (valor == logica.getSolucion(r, c)) {
+                    cells[r][c].setBackground(Color.GREEN);
+                    cells[r][c].setEditable(false); // bloquea celda correcta
+                } else {
+                    cells[r][c].setBackground(Color.PINK);
+                }
+            }
+        }
+    }
+
+    private void habilitarCeldas(boolean habilitar) {
+        for (int r = 0; r < SudokuLogica.SIZE; r++) {
+            for (int c = 0; c < SudokuLogica.SIZE; c++) {
+                cells[r][c].setEditable(habilitar);
+            }
+        }
+    }
+
     private void refrescar() {
         for (int r = 0; r < SudokuLogica.SIZE; r++) {
             for (int c = 0; c < SudokuLogica.SIZE; c++) {
                 int v = logica.get(r, c);
                 cells[r][c].setText(v == 0 ? "" : String.valueOf(v));
+                cells[r][c].setBackground(Color.WHITE);
             }
         }
     }
@@ -149,7 +190,7 @@ public class Lab3P2 extends JFrame {
             {1, 2, 8, 4, 3, 7, 6, 5, 9},
             {4, 5, 6, 1, 9, 3, 7, 8, 2},
             {9, 7, 3, 5, 8, 6, 2, 1, 4},
-            {3, 4, 1, 6, 2, 9, 8, 2, 5},
+            {3, 4, 1, 6, 2, 9, 8, 7, 5},
             {2, 6, 5, 7, 4, 8, 1, 9, 3},
             {7, 8, 9, 3, 5, 1, 4, 2, 6},
             {8, 1, 2, 9, 6, 4, 5, 7, 8},
@@ -157,18 +198,9 @@ public class Lab3P2 extends JFrame {
             {6, 9, 7, 8, 7, 5, 3, 4, 1}
         };
     }
-      private int[][] vacio() {
-        return new int[][]{
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0}
-        };
+
+    private int[][] vacio() {
+        return new int[9][9];
     }
 
     public static void main(String[] args) {
