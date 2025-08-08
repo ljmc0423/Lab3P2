@@ -8,7 +8,7 @@ package lab3p2;
  *
  * @author ljmc2
  */
-public class Lab3P2 {
+public class Lab3P2{
 
     /**
      * @param args the command line arguments
