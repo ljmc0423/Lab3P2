@@ -8,8 +8,9 @@ package lab3p2;
  *
  * @author ljmc2
  */
-public class SudokuLogica extends LogicaAbstract{
-    private final int SIZE = 9;
+public class SudokuLogica extends LogicaAbstract {
+
+    public static final int SIZE = 9;
     private int[][] tablero;
     private int[][] solucion;
 
@@ -21,8 +22,8 @@ public class SudokuLogica extends LogicaAbstract{
 
     @Override
     public void clear() {
-        for (int r = 0; r < SIZE; r++){
-            for (int c = 0; c < SIZE; c++){
+        for (int r = 0; r < SIZE; r++) {
+            for (int c = 0; c < SIZE; c++) {
                 tablero[r][c] = 0;
             }
         }
@@ -50,21 +51,23 @@ public class SudokuLogica extends LogicaAbstract{
 
     @Override
     public boolean esValido(int row, int col, int val) {
-        if (val < 1 || val > 9) return false;
-        for (int c = 0; c < SIZE; c++){
-            if (tablero[row][c] == val && c != col){
+        if (val < 1 || val > 9) {
+            return false;
+        }
+        for (int c = 0; c < SIZE; c++) {
+            if (tablero[row][c] == val && c != col) {
                 return false;
             }
         }
-        for (int r = 0; r < SIZE; r++){
-            if (tablero[r][col] == val && r != row){
+        for (int r = 0; r < SIZE; r++) {
+            if (tablero[r][col] == val && r != row) {
                 return false;
             }
         }
         int br = (row / 3) * 3, bc = (col / 3) * 3;
-        for (int r = br; r < br + 3; r++){
-            for (int c = bc; c < bc + 3; c++){
-                if (tablero[r][c] == val && (r != row || c != col)){
+        for (int r = br; r < br + 3; r++) {
+            for (int c = bc; c < bc + 3; c++) {
+                if (tablero[r][c] == val && (r != row || c != col)) {
                     return false;
                 }
             }
@@ -76,7 +79,9 @@ public class SudokuLogica extends LogicaAbstract{
     public boolean resuelto() {
         for (int r = 0; r < SIZE; r++) {
             for (int c = 0; c < SIZE; c++) {
-                if (tablero[r][c] != solucion[r][c]) return false;
+                if (tablero[r][c] != solucion[r][c]) {
+                    return false;
+                }
             }
         }
         return true;
@@ -84,8 +89,8 @@ public class SudokuLogica extends LogicaAbstract{
 
     @Override
     public void revelarSolucion() {
-        for (int r = 0; r < SIZE; r++){
-            for (int c = 0; c < SIZE; c++){
+        for (int r = 0; r < SIZE; r++) {
+            for (int c = 0; c < SIZE; c++) {
                 tablero[r][c] = solucion[r][c];
             }
         }
